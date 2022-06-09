@@ -1,23 +1,39 @@
+// import modules
 const express = require("express");
+const { json, urlencoded } = express;
+const mongoose = require("mongoose");
+const morgan = require("morgan");
 const cors = require("cors");
+require("dotenv").config();
 
+// app
 const app = express();
-require("dotenv").config({ path: "./config.env" });
 
-const port = process.env.PORT || 5000;
+// db
+mongoose
+	.connect(process.env.MONGO_URI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	})
+	.then(() => console.log("DB CONNECTED"))
+	.catch((err) => console.log("DB CONNECTION ERROR", err));
 
-app.use(cors());
-app.use(express.json());
-app.use(require(".routes/record"));
 
-// driver connection
-const dbo = require("./db/conn");
+// middlewares
+app.use(morgan("dev"));
+app.use(json());
+app.use(urlencoded({ extended: false }));
+app.use(cors({ origin: true, credentials: true }));
 
-app.listen(port, () => {
-    // performing database connection when server starts
-    dbo.connectToServer(function (err) {
-        if (err) console.error(err);
-    });
+// routes
+// const testRoutes = require("./routes/test");
+// app.use("/", testRoutes);
+
+// port
+const port = process.env.PORT || 8000;
+
+// listener
+const server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
-});
+})
 
