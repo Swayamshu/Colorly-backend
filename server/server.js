@@ -2,12 +2,22 @@
 const express = require("express");
 const { json, urlencoded } = express;
 const mongoose = require("mongoose");
-const morgan = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 
-// app
+const { PaletteRoutes, UserRoutes } = require("./routes");
+
 const app = express();
+
+app.use(json());
+app.use(urlencoded({ extended: false })); // can access params in req variable
+app.use(cors());
+
+// routes
+app.use("/palette", PaletteRoutes);
+app.use("/auth", UserRoutes);
+
+const port = process.env.PORT || 8000;
 
 // db
 mongoose
@@ -15,25 +25,10 @@ mongoose
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	})
-	.then(() => console.log("DB CONNECTED"))
+	.then(() => {
+		console.log("DB CONNECTED");
+		app.listen(port, () => {
+			console.log(`Server is running on port: ${port}`);
+		});
+	})
 	.catch((err) => console.log("DB CONNECTION ERROR", err));
-
-
-// middlewares
-app.use(morgan("dev"));
-app.use(json());
-app.use(urlencoded({ extended: false }));
-app.use(cors({ origin: true, credentials: true }));
-
-// routes
-// const testRoutes = require("./routes/test");
-// app.use("/", testRoutes);
-
-// port
-const port = process.env.PORT || 8000;
-
-// listener
-const server = app.listen(port, () => {
-    console.log(`Server is running on port: ${port}`);
-})
-
