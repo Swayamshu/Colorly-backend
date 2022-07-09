@@ -62,7 +62,8 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
     const token = req.headers.authorization.slice(6);
-    const user = await Token.findOne({ token: token });
+    const userTokenObject = await Token.findOne({ token: token });
+    const user = await User.findOne({ _id: userTokenObject.userId });
     
     if (user) {
         res.status(200).json({
