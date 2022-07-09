@@ -37,10 +37,10 @@ const createColorPalette = async (req, res) => {
 
 const saveColorPalette = async (req, res) => {
     var { colors, paletteId, likedByUser, likes } = req.body;
-
+    
     try {
         const palette = await ColorPalette.findOne({ colors: colors });
-        if (!palette || paletteId === "") {  // palette doesn't exists in db
+        if (paletteId === "" && !palette) {  // palette doesn't exists in db
             paletteId = mongoose.Types.ObjectId();
             const newPalette = new ColorPalette({
                 _id: paletteId,
@@ -51,7 +51,8 @@ const saveColorPalette = async (req, res) => {
             await newPalette.save();
         }
         // add palette to user's collection
-        const user = await User.findOne({ id: likedByUser }).populate("paletteCollection");
+        const user = await User.findOne({ _id: likedByUser }).populate("paletteCollection");
+        console.log("user -> ", user);
         let alreadySaved = false;
         for (id in user.paletteCollection) {
             if (id.colors === colors) alreadySaved = true;
