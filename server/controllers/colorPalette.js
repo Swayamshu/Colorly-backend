@@ -7,18 +7,6 @@ const getUserId = async (token) => {
     return user.userId._id;
 }
 
-const getApiPalettes = (params) => {
-    axios.get("http://www.colourlovers.com/api/palettes/", {
-            params: params
-        })
-        .then(res => {
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        })
-}
-
 const getNewColorPalettes = async (req, res) => {
     const { numResults, hueOptions, hex, hexLogic } = req.body;
     const params = {
@@ -38,9 +26,12 @@ const getNewColorPalettes = async (req, res) => {
 
 const getPopularColorPalettes = async (req, res) => {
     const { numResults, hueOptions, hex, hexLogic } = req.body;
-    const params = {
+    let params = {
         format: "json",
         numResults: numResults,
+    }
+    if (hex) {
+        params = { ...params, hex: hex }
     }
 
     axios.get("http://www.colourlovers.com/api/palettes/top", { params: params })
