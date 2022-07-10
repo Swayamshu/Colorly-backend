@@ -12,6 +12,7 @@ const colorPaletteSchema = new mongoose.Schema(
                 ref: "User"
             }
         ],
+        title: String,
         colors: [String],
         categories: String,
         likes: Number,
